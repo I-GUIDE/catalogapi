@@ -115,8 +115,11 @@
         },
         "type": "document"
       },
-      "temporalCoverage": {
-        "type": "string"
+      "temporalCoverageStart": {
+        "type": "date"
+      },
+      "temporalCoverageEnd": {
+        "type": "date"
       },
       "variableMeasured": [
         {
