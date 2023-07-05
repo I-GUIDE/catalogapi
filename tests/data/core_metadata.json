@@ -107,9 +107,11 @@
 		"comment": "string"
 	}],
   "includedInDataCatalog": [
-    {
-      "@type": "DataCatalog",
-      "name": "string",
-      "description": "string",
-      "url": "https://hydroshare.org",
-}]
+	  {
+		  "@type": "DataCatalog",
+		  "name": "string",
+		  "description": "string",
+		  "url": "https://hydroshare.org"
+	  }
+	]
+}

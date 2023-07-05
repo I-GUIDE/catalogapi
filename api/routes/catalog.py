@@ -2,8 +2,10 @@ from typing import Annotated, List
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
+from starlette.requests import Request
 
 from api.authentication.user import get_current_user
+from api.models.adapter import RepositoryMetadataAdapter, RepositoryRequestHandler, RepositoryType
 from api.models.catalog import DatasetMetadataDOC
 from api.models.user import Submission, User
 
@@ -74,3 +76,15 @@ async def delete_dataset(submission_id: PydanticObjectId, user: Annotated[User, 
 @router.get("/submission/", response_model=List[Submission])
 async def get_submissions(user: Annotated[User, Depends(get_current_user)]):
     return user.submissions
+
+
+@router.get("/repository/hydroshare/{identifier}", response_model=DatasetMetadataDOC)
+# async def get_hydroshare_resource_metadata(request: Request, identifier: str,
+#                                            user: Annotated[User, Depends(get_current_user)]):
+async def get_hydroshare_resource_metadata(request: Request, identifier: str):
+    # TODO: Add user authentication
+    hs_request_handler = RepositoryRequestHandler.get_handler(repository=RepositoryType.HYDROSHARE)
+    metadata = await hs_request_handler.get_metadata(identifier)
+    hs_adapter = RepositoryMetadataAdapter.get_adapter(repository=RepositoryType.HYDROSHARE)
+    catalog_dataset = hs_adapter.to_catalog_record(metadata)
+    return catalog_dataset

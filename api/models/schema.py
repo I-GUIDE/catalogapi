@@ -154,7 +154,7 @@ class TimeInterval(str):
             elif len(date_string) == 4:
                 parse_format = "%Y"
             else:
-                parse_format = "%Y-%m-%dT%H:%M:%SZ"
+                parse_format = "%Y-%m-%dT%H:%M:%S"
             try:
                 datetime.strptime(date_string, parse_format)
             except ValueError:
@@ -358,7 +358,7 @@ class Distribution(SchemaBaseModel):
     type: str = Field(alias="@type", default="DataDownload", description="A downloadable form of the resource, at a specific location, in a specific format. Repeat if multiple files or if different formats/variations are available.")
     name: Optional[str] = Field(description="A text string indicating the name of the content to be downloaded. This could be a file name or a descriptive name for the content file.")
     contentUrl: HttpUrl = Field(title="Content URL", description="A URL for the content to be downloaded.")
-    encodingFormat: Optional[list[str]] = Field(description="Text string indicating the file or media type, usually expressed using a MIME format.")
+    encodingFormat: Optional[str] = Field(description="Text string indicating the file or media type, usually expressed using a MIME format.")
     contentSize: Optional[str] = Field(description="A text string indicating the file size in megabytes")
     comment: Optional[str] = Field(description="A text string with comments about the resource. For example, an explanation that provides additional information on how the dataset is being accessed or downloaded.")
 

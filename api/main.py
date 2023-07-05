@@ -1,8 +1,8 @@
 import asyncio
+import os
 
 import uvicorn
 from beanie import init_beanie
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -16,8 +16,6 @@ from api.models.user import Submission, User
 from api.routes.catalog import router as catalog_router
 from api.routes.discovery import router as discovery_router
 
-# had to use load_dotenv() to get the env variables to work during testing
-load_dotenv()
 app = FastAPI()
 
 app.add_middleware(
@@ -50,7 +48,9 @@ async def health_check():
 app.include_router(catalog_router, tags=["Dataset"], prefix="/api/catalog")
 app.include_router(discovery_router, tags=["Discovery"], prefix="/api/discovery")
 
-app.mount("/api/schemas", StaticFiles(directory="api/models/schemas"), name="schemas")
+parent_dir = os.path.dirname(__file__)
+static_dir = os.path.join(parent_dir, "models/schemas")
+app.mount("/api/schemas", StaticFiles(directory=static_dir), name="schemas")
 
 openapi_schema = get_openapi(
     title="I-GUIDE Catalog API",
