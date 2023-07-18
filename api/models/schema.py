@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, validator
+from .utils import parse_date
 
 orcid_pattern = "\\b\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]\\b"
 orcid_pattern_placeholder = "e.g. '0000-0001-2345-6789'"
@@ -190,20 +191,6 @@ class TimeInterval(str):
 
     @classmethod
     def validate(cls, v):
-        def parse_date(date_string):
-            if len(date_string) == 10:
-                parse_format = "%Y-%m-%d"
-            elif len(date_string) == 7:
-                parse_format = "%Y-%m"
-            elif len(date_string) == 4:
-                parse_format = "%Y"
-            else:
-                parse_format = "%Y-%m-%dT%H:%M:%SZ"
-            try:
-                datetime.strptime(date_string, parse_format)
-            except ValueError:
-                raise ValueError('invalid date format')
-
         if not isinstance(v, str):
             raise TypeError('string required')
 
@@ -213,12 +200,13 @@ class TimeInterval(str):
         try:
             start, end = v.split('/')
         except ValueError:
-            raise ValueError('invalid format')
+            raise ValueError('invalid date format')
 
-        parse_date(start)
+        if parse_date(start) is None:
+            raise ValueError('invalid date format')
         if end != "..":
-            parse_date(end)
-
+            if parse_date(end) is None:
+                raise ValueError('invalid date format')
         return v
 
     def __repr__(self):
