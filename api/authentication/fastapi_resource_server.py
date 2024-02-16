@@ -47,24 +47,24 @@ def fetch_jwks(well_known: dict) -> dict:
 
 
 class JwtDecodeOptions(BaseModel):
-    verify_signature: Optional[bool]
-    verify_aud: Optional[bool]
-    verify_iat: Optional[bool]
-    verify_exp: Optional[bool]
-    verify_nbf: Optional[bool]
-    verify_iss: Optional[bool]
-    verify_sub: Optional[bool]
-    verify_jti: Optional[bool]
-    verify_at_hash: Optional[bool]
-    require_aud: Optional[bool]
-    require_iat: Optional[bool]
-    require_exp: Optional[bool]
-    require_nbf: Optional[bool]
-    require_iss: Optional[bool]
-    require_sub: Optional[bool]
-    require_jti: Optional[bool]
-    require_at_hash: Optional[bool]
-    leeway: Optional[int]
+    verify_signature: Optional[bool] = None
+    verify_aud: Optional[bool] = None
+    verify_iat: Optional[bool] = None
+    verify_exp: Optional[bool] = None
+    verify_nbf: Optional[bool] = None
+    verify_iss: Optional[bool] = None
+    verify_sub: Optional[bool] = None
+    verify_jti: Optional[bool] = None
+    verify_at_hash: Optional[bool] = None
+    require_aud: Optional[bool] = None
+    require_iat: Optional[bool] = None
+    require_exp: Optional[bool] = None
+    require_nbf: Optional[bool] = None
+    require_iss: Optional[bool] = None
+    require_sub: Optional[bool] = None
+    require_jti: Optional[bool] = None
+    require_at_hash: Optional[bool] = None
+    leeway: Optional[int] = None
 
 
 class OidcResourceServer(SecurityBase):

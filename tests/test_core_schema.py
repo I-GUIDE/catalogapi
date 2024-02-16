@@ -315,7 +315,7 @@ async def test_core_schema_associated_media_cardinality(core_data, core_model, m
     core_model_instance = await utils.validate_data_model(core_data, core_model)
 
     if multiple_media is None:
-        assert core_model_instance.associatedMedia is None
+        assert core_model_instance.associatedMedia == []
     if multiple_media and multiple_media is not None:
         assert len(core_model_instance.associatedMedia) == 2
         assert core_model_instance.associatedMedia[0].type == associated_media[0]["@type"]
@@ -407,12 +407,14 @@ async def test_core_schema_associated_media_additional_property(
             {
                 "@type": "PropertyValue",
                 "name": "Feature Count",
-                "value": 7,
+                "value": "7",
             },
             {
                 "@type": "PropertyValue",
                 "name": "Field Count",
-                "value": 10,
+                "value": "10",
+                "minValue": 10,
+                "maxValue": 100.0,
             },
         ]
 
@@ -431,6 +433,8 @@ async def test_core_schema_associated_media_additional_property(
             == "Field Count"
         )
         assert core_model_instance.associatedMedia[0].additionalProperty[1].value == '10'
+        assert core_model_instance.associatedMedia[0].additionalProperty[1].minValue == 10
+        assert core_model_instance.associatedMedia[0].additionalProperty[1].maxValue == 100.0
     else:
         assert core_model_instance.associatedMedia[0].additionalProperty == []
 
@@ -783,6 +787,8 @@ async def test_core_schema_spatial_coverage_value_type(core_data, core_model, da
     assert core_model_instance.spatialCoverage.type == "Place"
     if "name" in data_format:
         assert core_model_instance.spatialCoverage.name == data_format["name"]
+    else:
+        assert core_model_instance.spatialCoverage.name is None
     if "geo" in data_format:
         if data_format["geo"]["@type"] == "GeoCoordinates":
             assert core_model_instance.spatialCoverage.geo.latitude == data_format["geo"]["latitude"]
@@ -791,6 +797,9 @@ async def test_core_schema_spatial_coverage_value_type(core_data, core_model, da
             assert (
                 core_model_instance.spatialCoverage.geo.box == data_format["geo"]["box"]
             )
+    else:
+        assert core_model_instance.spatialCoverage.geo is None
+
     if "additionalProperty" in data_format:
         if len(core_model_instance.spatialCoverage.additionalProperty) == 1:
             assert (
@@ -971,8 +980,13 @@ async def test_core_schema_license_optional_attributes(core_data, core_model, da
     assert core_model_instance.license.name == data_format["name"]
     if "url" in data_format:
         assert core_model_instance.license.url == data_format["url"]
+    else:
+        assert core_model_instance.license.url is None
+
     if "description" in data_format:
         assert core_model_instance.license.description == data_format["description"]
+    else:
+        assert core_model_instance.license.description is None
 
 
 @pytest.mark.parametrize('is_multiple', [True, False, None])
@@ -1034,7 +1048,7 @@ async def test_core_schema_has_part_of_cardinality(core_data, core_model, is_mul
         assert core_model_instance.hasPart[0].description == has_parts[0]["description"]
         assert core_model_instance.hasPart[0].url == has_parts[0]["url"]
     else:
-        assert core_model_instance.hasPart is None
+        assert core_model_instance.hasPart == []
 
 
 @pytest.mark.parametrize(
@@ -1142,8 +1156,7 @@ async def test_core_schema_is_part_of_cardinality(core_data, core_model, is_mult
         assert core_model_instance.isPartOf[0].description == is_part_of[0]["description"]
         assert core_model_instance.isPartOf[0].url == is_part_of[0]["url"]
     else:
-        assert core_model_instance.isPartOf is None
-
+        assert core_model_instance.isPartOf == []
 
 @pytest.mark.parametrize(
     "data_format",
@@ -1188,8 +1201,13 @@ async def test_core_schema_is_part_of_optional_attributes(core_data, core_model,
     assert core_model_instance.isPartOf[0].name == data_format["name"]
     if "description" in data_format:
         assert core_model_instance.isPartOf[0].description == data_format["description"]
+    else:
+        assert core_model_instance.isPartOf[0].description is None
+
     if "url" in data_format:
         assert core_model_instance.isPartOf[0].url == data_format["url"]
+    else:
+        assert core_model_instance.isPartOf[0].url is None
 
 
 @pytest.mark.parametrize('dt_type', ["datetime", None])
@@ -1254,7 +1272,7 @@ async def test_core_schema_provider_value_type(core_data, core_model, provider_t
         core_data["provider"] = {
             "@type": "Organization",
             "name": "HydroShare",
-            "url": "https://hydroshare.org"
+            "url": "https://hydroshare.org/"
         }
 
     # validate the data model
@@ -1267,7 +1285,7 @@ async def test_core_schema_provider_value_type(core_data, core_model, provider_t
     else:
         assert provider.type == "Organization"
         assert provider.name == "HydroShare"
-        assert provider.url == "https://hydroshare.org"
+        assert provider.url == "https://hydroshare.org/"
 
 
 @pytest.mark.parametrize('multiple_values', [True, False, None])
@@ -1324,7 +1342,7 @@ async def test_core_schema_subject_of_cardinality(core_data, core_model, multipl
         assert core_model_instance.subjectOf[0].type == "CreativeWork"
         assert core_model_instance.subjectOf[0].name == "Test subject of"
     else:
-        assert core_model_instance.subjectOf is None
+        assert core_model_instance.subjectOf == []
 
 
 @pytest.mark.parametrize('include_version', [True, False])
@@ -1418,19 +1436,14 @@ async def test_core_schema_funding_cardinality(core_data, core_model, multiple_f
             == "HDR Institute: Geospatial Understanding through an Integrative Discovery Environment - 1"
         )
         assert core_model_instance.funding[0].identifier == "https://nsf.gov/awardsearch/showAward?AWD_ID=2118329"
-        # assert core_model_instance.funding[0].funder.type == "Organization"
-        # assert core_model_instance.funding[0].funder.name == "National Science Foundation"
-        # assert core_model_instance.funding[0].funder.url[0] == "https://ror.org/021nxhr62"
-        # assert core_model_instance.funding[0].funder.identifier[1] == "https://doi.org/10.13039/100000001"
+        assert core_model_instance.funding[0].funder is None
         assert core_model_instance.funding[1].type == "MonetaryGrant"
         assert (
             core_model_instance.funding[1].name
             == "HDR Institute: Geospatial Understanding through an Integrative Discovery Environment - 2"
         )
         assert core_model_instance.funding[1].description == "Test grant description"
-        # assert core_model_instance.funding[1].funder.type == "Person"
-        # assert core_model_instance.funding[1].funder.name == "John Doe"
-        # assert core_model_instance.funding[1].funder.email == "johnd@gmail.com"
+        assert core_model_instance.funding[0].funder is None
     elif multiple_funding is not None:
         assert core_model_instance.funding[0].type == "MonetaryGrant"
         assert (
@@ -1439,11 +1452,9 @@ async def test_core_schema_funding_cardinality(core_data, core_model, multiple_f
         )
         assert core_model_instance.funding[0].identifier == "https://nsf.gov/awardsearch/showAward?AWD_ID=2118329"
         assert core_model_instance.funding[0].description == "Test grant description"
-        # assert core_model_instance.funding[0].funder.type == "Person"
-        # assert core_model_instance.funding[0].funder.name == "John Doe"
-        # assert core_model_instance.funding[0].funder.email == "johnd@gmail.com"
+        assert core_model_instance.funding[0].funder is None
     else:
-        assert core_model_instance.funding is None
+        assert core_model_instance.funding == []
 
 
 @pytest.mark.parametrize('include_funder', [True, False])
@@ -1508,7 +1519,7 @@ async def test_core_schema_funding_funder_optional(core_data, core_model, includ
     if include_funder:
         assert core_model_instance.funding[0].funder.type == "Organization"
         assert core_model_instance.funding[0].funder.name == "National Science Foundation"
-        assert core_model_instance.funding[0].funder.url == "https://www.nsf.gov"
+        assert core_model_instance.funding[0].funder.url == "https://www.nsf.gov/"
         assert core_model_instance.funding[1].funder.type == "Organization"
         assert core_model_instance.funding[1].funder.name == "National Science Foundation"
         assert core_model_instance.funding[1].funder.address == "2415 Eisenhower Avenue Alexandria, Virginia 22314"
@@ -1537,7 +1548,7 @@ async def test_core_schema_citation_optional(core_data, core_model, include_cita
     if include_citation:
         assert core_model_instance.citation == ["Test citation"]
     else:
-        assert core_model_instance.citation is None
+        assert core_model_instance.citation == []
 
 
 @pytest.mark.parametrize('include_publisher', [True, False])
@@ -1564,7 +1575,7 @@ async def test_core_schema_publisher_optional(core_data, core_model, include_pub
     if include_publisher:
         assert core_model_instance.publisher.type == "Organization"
         assert core_model_instance.publisher.name == "HydroShare"
-        assert core_model_instance.publisher.url == "https://hydroshare.org"
+        assert core_model_instance.publisher.url == "https://hydroshare.org/"
         assert core_model_instance.publisher.address == "1167 Massachusetts Ave Suites 418 & 419, Arlington, MA 02476"
     else:
         assert core_model_instance.publisher is None

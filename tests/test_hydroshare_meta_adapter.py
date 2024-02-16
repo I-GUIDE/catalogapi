@@ -20,7 +20,7 @@ async def test_hydroshare_resource_meta_adapter(hydroshare_resource_metadata, co
 
     dataset = adapter.to_catalog_record(hydroshare_resource_metadata)
     try:
-        dataset_model(**dataset.dict())
+        dataset_model(**dataset.model_dump())
     except ValidationError as err:
         pytest.fail(f"Catalog dataset schema model validation failed: {str(err)}")
 
@@ -42,7 +42,7 @@ async def test_hydroshare_resource_meta_adapter(hydroshare_resource_metadata, co
             assert cr.type == "Organization"
             assert cr.name == "Utah State University"
             assert cr.address == "101 Logan 1st Ave"
-            assert cr.url == "https://www.usu.edu"
+            assert cr.url == "https://www.usu.edu/"
 
     assert dataset.dateCreated == datetime.fromisoformat("2023-05-31T03:12:34.504216+00:00")
     assert dataset.dateModified == datetime.fromisoformat("2023-06-23T21:43:10.582708+00:00")
@@ -57,7 +57,7 @@ async def test_hydroshare_resource_meta_adapter(hydroshare_resource_metadata, co
     assert dataset.funding[0].name == "Modelling Watershed Colorado Riverbasin"
     assert dataset.funding[0].identifier == "100-678-NSF"
     assert dataset.funding[0].funder.name == "NSF"
-    assert dataset.funding[0].funder.url == "https://www.nsf.gov"
+    assert dataset.funding[0].funder.url == "https://www.nsf.gov/"
     assert dataset.temporalCoverage.startDate == datetime.fromisoformat("2008-10-01T00:00:00")
     assert dataset.temporalCoverage.endDate == datetime.fromisoformat("2009-06-30T21:00:00")
     if coverage_type == "point":
@@ -104,7 +104,7 @@ async def test_hydroshare_collection_meta_adapter(hydroshare_collection_metadata
     adapter = get_adapter_by_type(RepositoryType.HYDROSHARE)
     dataset = adapter.to_catalog_record(hydroshare_collection_metadata)
     try:
-        dataset_model(**dataset.dict())
+        dataset_model(**dataset.model_dump())
     except ValidationError as err:
         pytest.fail(f"Catalog dataset schema model validation failed: {str(err)}")
 

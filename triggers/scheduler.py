@@ -1,17 +1,18 @@
+import asyncio
 import logging
+from asyncio import run as aiorun
 
 import typer
+from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
-from rocketry import Rocketry
-from rocketry.conds import daily
 
 from api.adapters.utils import RepositoryType, get_adapter_by_type
 from api.config import get_settings
 from api.models.catalog import DatasetMetadataDOC
 from api.models.user import Submission
 
-app = Rocketry(config={"task_execution": "async"})
 logger = logging.getLogger()
 
 
@@ -38,10 +39,14 @@ async def retrieve_repository_record(submission: Submission):
         raise Exception(err_msg)
 
 
-@app.task(daily)
-async def do_daily():
-    settings = get_settings()
-    db = AsyncIOMotorClient(settings.db_connection_string)[settings.database_name]
+def scheduler_event_listener(event):
+    if event.exception:
+        logger.error("SCHEDULER: Repository record refresh job failed")
+    else:
+        logger.warning("SCHEDULER: Repository record refresh job succeeded")
+
+
+async def refresh(db: AsyncIOMotorClient):
     await init_beanie(database=db, document_models=[Submission, DatasetMetadataDOC])
 
     async for submission in Submission.find(Submission.repository != None):
@@ -72,8 +77,26 @@ async def do_daily():
             logger.exception(f"Failed to collect submission {submission.url}")
 
 
+async def _main():
+    logger.warning("SCHEDULER: starting up repository record refresh job")
+    settings = get_settings()
+    db = AsyncIOMotorClient(settings.db_connection_string)[settings.database_name]
+    await init_beanie(database=db, document_models=[Submission, DatasetMetadataDOC])
+    scheduler = AsyncIOScheduler()
+    try:
+        # run the job once a day at midnight
+        scheduler.add_job(refresh, 'cron', hour=0, coalesce=True, args=[db])
+        scheduler.add_listener(scheduler_event_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+        scheduler.start()
+        while True:
+            await asyncio.sleep(60)
+    finally:
+        scheduler.shutdown()
+        db.close()
+
+
 def main():
-    app.run()
+    aiorun(_main())
 
 
 if __name__ == "__main__":

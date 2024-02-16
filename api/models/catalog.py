@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from beanie import Document
 
@@ -19,7 +20,7 @@ class CoreMetadataDOC(Document, CoreMetadata):
             ),
             datetime.datetime: lambda dt: datetime.datetime(
                 year=dt.year, month=dt.month, day=dt.day, hour=dt.hour, minute=dt.minute, second=dt.second
-            )
+            ),
         }
 
     def as_submission(self) -> Submission:
@@ -33,4 +34,4 @@ class CoreMetadataDOC(Document, CoreMetadata):
 
 
 class DatasetMetadataDOC(CoreMetadataDOC):
-    repository_identifier: str = None
+    repository_identifier: Optional[str] = None

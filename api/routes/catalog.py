@@ -86,7 +86,7 @@ async def delete_dataset(submission_id: PydanticObjectId, user: Annotated[User, 
     await user.save(link_rule=WriteRules.WRITE)
     await submission.delete()
     await dataset.delete()
-    return {"deleted_dataset_id": submission_id}
+    return {"deleted_dataset_id": str(submission_id)}
 
 
 @router.get("/submission/", response_model=List[Submission])

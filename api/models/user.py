@@ -2,7 +2,8 @@ from datetime import datetime
 from typing import List, Optional, TYPE_CHECKING
 
 from beanie import Document, Link, PydanticObjectId
-from pydantic import HttpUrl
+
+from api.models.schema import HttpUrlStr
 
 if TYPE_CHECKING:
     # this avoids circular imports
@@ -14,15 +15,15 @@ class Submission(Document):
     authors: List[str] = []
     identifier: PydanticObjectId
     submitted: datetime = datetime.utcnow()
-    url: HttpUrl = None
-    repository: Optional[str]
-    repository_identifier: Optional[str]
+    url: HttpUrlStr = None
+    repository: Optional[str] = None
+    repository_identifier: Optional[str] = None
 
 
 class User(Document):
     access_token: str
     orcid: str
-    preferred_username: Optional[str]
+    preferred_username: Optional[str] = None
     submissions: List[Link[Submission]] = []
 
     def submission(self, identifier: PydanticObjectId) -> Submission:

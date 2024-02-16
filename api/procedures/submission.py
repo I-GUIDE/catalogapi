@@ -15,7 +15,7 @@ async def create_or_update_submission(identifier, record, user: User, metadata_j
     submission.metadata_json = json.dumps(metadata_json, default=str)
     existing_submission = user.submission(identifier)
     if existing_submission:
-        await existing_submission.set(submission.dict(exclude_unset=True))
+        await existing_submission.set(submission.model_dump(exclude_unset=True))
     else:
         user.submissions.append(submission)
         await user.save(link_rule=WriteRules.WRITE)

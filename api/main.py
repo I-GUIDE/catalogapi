@@ -1,5 +1,6 @@
 import asyncio
 import os
+from contextlib import asynccontextmanager
 
 import uvicorn
 from beanie import init_beanie
@@ -21,7 +22,13 @@ from api.routes.discovery import router as discovery_router
 from api.exceptions import RepositoryException
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app_: FastAPI):
+    await startup_db_client()
+    yield
+    await shutdown_db_client()
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,7 +50,6 @@ async def validation_exception_handler(request, exc: ValidationError):
                              status_code=status.HTTP_400_BAD_REQUEST)
 
 
-@app.on_event("startup")
 async def startup_db_client():
     settings = get_settings()
     app.mongodb_client = AsyncIOMotorClient(settings.db_connection_string)
@@ -51,7 +57,6 @@ async def startup_db_client():
     await init_beanie(database=app.mongodb, document_models=[DatasetMetadataDOC, User, Submission])
 
 
-@app.on_event("shutdown")
 async def shutdown_db_client():
     app.mongodb_client.close()
 
@@ -85,7 +90,8 @@ class Server(uvicorn.Server):
 async def main():
     """Run FastAPI"""
 
-    server = Server(config=uvicorn.Config(app, workers=1, loop="asyncio", host="0.0.0.0", port=8000, forwarded_allow_ips="*"))
+    server = Server(config=uvicorn.Config(app, workers=1, loop="asyncio", host="0.0.0.0", port=8000,
+                                          forwarded_allow_ips="*"))
     api = asyncio.create_task(server.serve())
 
     await asyncio.wait([api])

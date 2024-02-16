@@ -1,9 +1,9 @@
 {
-	"@context": "https://schema.org",
+	"@context": "https://schema.org/",
 	"@type": "Dataset",
 	"name": "Test Dataset",
 	"description": "This is a test dataset metadata json file to test catalog api",
-	"url": "https://hydroshare.org/resource/e2fdf99cbb0c4275b32afd3c16ae6863",
+	"url": "https://hydroshare.org/resource/e2fdf99cbb0c4275b32afd3c16ae6863/",
 	"identifier": ["https://www.hydroshare.org/resource/6625bdbde41c45c2b906f32be7ea70f0/"],
 	"creator": [
 		{
@@ -24,19 +24,19 @@
 	"license": {
 		"@type": "CreativeWork",
 		"name": "MIT License",
-		"url": "https://spdx.org/licenses/MIT",
+		"url": "https://spdx.org/licenses/MIT/",
 		"description": "A permissive license that is short and to the point. It lets people do anything with your code with proper attribution and without warranty."
     },
 	"provider": {
 		"@type": "Organization",
 		"name": "HydroShare",
-		"url": "https://hydroshare.org",
+		"url": "https://hydroshare.org/",
 		"address": "1167 Massachusetts Ave Suites 418 & 419, Arlington, MA 02476"
 	},
 	"publisher": {
 		"@type": "Organization",
 		"name": "HydroShare",
-		"url": "https://hydroshare.org",
+		"url": "https://hydroshare.org/",
 		"address": "1167 Massachusetts Ave Suites 418 & 419, Arlington, MA 02476"
 	},
 	"datePublished": "2023-05-10T00:00:00",
@@ -87,7 +87,7 @@
 			"@type": "CreativeWork",
 			"name": "Great Salt Lake Bathymetry",
 			"description": "Digital Elevation Model for the Great Salt Lake, lake bed bathymetry.",
-			"url": "https://orcid.org/0000-0000-0000-0001"
+			"url": "https://orcid.org/0000-0000-0000-0001/"
 		}
 	],
 	"isPartOf": [
@@ -95,13 +95,13 @@
 			"@type": "CreativeWork",
 			"name": "Collection of Great Salt Lake Data",
 			"description": "Data from the Great Salt Lake and its basin",
-			"url": "https://orcid.org/0000-0000-0000-0001"
+			"url": "https://orcid.org/0000-0000-0000-0001/"
 		}
 	],
 	"associatedMedia": [
 		{
 			"@type": "DataDownload",
-			"contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/USGS_Harvey_gages_TxLaMsAr.csv",
+			"contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/USGS_Harvey_gages_TxLaMsAr.csv/",
 			"encodingFormat": "text/csv",
 			"contentSize": "0.17 MB",
 			"name": "USGS gage locations within the Harvey-affected areas in Texas"
