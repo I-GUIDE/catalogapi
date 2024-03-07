@@ -6,6 +6,7 @@ from api.adapters.base import AbstractRepositoryMetadataAdapter
 
 class RepositoryType(str, Enum):
     HYDROSHARE = 'HYDROSHARE'
+    S3 = 'S3'
 
 
 _adapter_registry = {}

@@ -7,6 +7,7 @@ from api.adapters.utils import get_adapter_by_type, RepositoryType
 from api.authentication.user import get_current_user
 from api.models.catalog import DatasetMetadataDOC
 from api.models.user import Submission, User
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -120,6 +121,23 @@ async def refresh_dataset_from_hydroshare(identifier: str, user: Annotated[User,
 
     dataset = await _save_to_db(repository_type=RepositoryType.HYDROSHARE, identifier=identifier,
                                 user=user, submission=submission)
+    return dataset
+
+
+class S3Path(BaseModel):
+    path: str
+    bucket: str
+    endpoint_url: str = 'https://api.minio.cuahsi.io'
+
+
+@router.put("/repository/s3", response_model=DatasetMetadataDOC)
+async def register_s3_dataset(request_model: S3Path, user: Annotated[User, Depends(get_current_user)]):
+    path = request_model.path
+    bucket = request_model.bucket
+    endpoint_url = request_model.endpoint_url
+    identifier = f"{endpoint_url}+{bucket}+{path}"
+    submission: Submission = user.submission_by_repository(repo_type=RepositoryType.S3, identifier=identifier)
+    dataset = await _save_to_db(repository_type=RepositoryType.S3, identifier=identifier, user=user, submission=submission)
     return dataset
 
 
