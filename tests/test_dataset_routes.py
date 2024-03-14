@@ -28,6 +28,15 @@ async def test_create_dataset(client_test, dataset_data, test_user_access_token)
     response_data['temporalCoverage']['endDate'] = response_data['temporalCoverage']['endDate'][:end_date_length]
     # assert that the response contains the expected data
     response_data.pop("repository_identifier")
+    # remove additional property fields from response_data for which the test data does not have values
+    for a_property in response_data["additionalProperty"]:
+        assert a_property.pop("description") is None
+        assert a_property.pop("minValue") is None
+        assert a_property.pop("maxValue") is None
+        assert a_property.pop("unitCode") is None
+        assert a_property.pop("propertyID") is None
+        assert a_property.pop("measurementTechnique") is None
+
     assert response_data == dataset_data
     # there should be one related submission record in the db
     submissions = await Submission.find().to_list()
@@ -93,6 +102,14 @@ async def test_update_dataset(client_test, dataset_data):
     response_data.pop('_id')
     # assert that the response contains the expected data
     response_data.pop("repository_identifier")
+    # remove additional property fields from response_data for which the test data does not have values
+    for a_property in response_data["additionalProperty"]:
+        assert a_property.pop("description") is None
+        assert a_property.pop("minValue") is None
+        assert a_property.pop("maxValue") is None
+        assert a_property.pop("unitCode") is None
+        assert a_property.pop("propertyID") is None
+        assert a_property.pop("measurementTechnique") is None
     assert response_data == dataset_data
 
 
@@ -153,6 +170,13 @@ async def test_get_datasets_exclude_none(client_test, dataset_data):
     assert dataset_response.status_code == 200
     dataset_response_data = dataset_response.json()
     assert "version" not in dataset_response_data[0]
+    for a_property in dataset_response_data[0]["additionalProperty"]:
+        assert "description" not in a_property
+        assert "minValue" not in a_property
+        assert "maxValue" not in a_property
+        assert "unitCode" not in a_property
+        assert "propertyID" not in a_property
+        assert "measurementTechnique" not in a_property
 
 
 @pytest.mark.parametrize("multiple", [True, False])

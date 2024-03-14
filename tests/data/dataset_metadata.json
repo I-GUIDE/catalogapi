@@ -107,13 +107,39 @@
 			"contentSize": "0.17 MB",
 			"name": "USGS gage locations within the Harvey-affected areas in Texas",
             "sha256": "830f4b50e78e8a8fb0f7eee7369171dacbcaa43cc2c4deb59cef8e4fd2f641c5",
-			"additionalProperty": [],
-			"variableMeasured": null,
-			"spatialCoverage": null,
-			"temporalCoverage": null,
-			"sourceOrganization": null,
 			"isPartOf": null
 		}
 	],
-	"citation": ["Citation for the dataset"]
+	"citation": ["Citation for the dataset"],
+    "additionalProperty": [
+          {
+              "@type": "PropertyValue",
+              "name": "Rows",
+              "value": "4981"
+          },
+          {
+              "@type": "PropertyValue",
+              "name": "Columns",
+              "value": "2956"
+          }
+    ],
+  "variableMeasured": [
+        {
+            "@type": "PropertyValue",
+            "propertyID": "Variable Name",
+			"name": "Elevation",
+            "value": "Elevation",
+            "unitCode": "m",
+            "minValue": 1358.2,
+            "maxValue": 3040.8,
+            "description": "Digital Elevation Model",
+			"measurementTechnique": "Lidar"
+        }
+    ],
+  "sourceOrganization": {
+        "@type": "Organization",
+        "name": "The US Geological Survey (USGS)",
+        "url": "https://www.usgs.gov/3d-elevation-program",
+	  	"address": null
+    }
 }

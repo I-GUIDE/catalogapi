@@ -3,8 +3,7 @@ import datetime
 from beanie import Document
 
 from api.models.user import Submission
-
-from .schema import CoreMetadata
+from .schema import CoreMetadata, DatasetMetadata
 
 
 class CoreMetadataDOC(Document, CoreMetadata):
@@ -32,5 +31,5 @@ class CoreMetadataDOC(Document, CoreMetadata):
         )
 
 
-class DatasetMetadataDOC(CoreMetadataDOC):
+class DatasetMetadataDOC(CoreMetadataDOC, DatasetMetadata):
     repository_identifier: str = None
