@@ -213,38 +213,10 @@ export default class App extends Vue {
   };
   public paths: any[] = [
     {
-      attrs: { to: "/" },
-      label: "Home",
-      icon: "mdi-home",
-    },
-    {
       attrs: { to: "/search" },
       label: "Search",
       icon: "mdi-magnify",
     },
-    {
-      attrs: { to: "/submissions" },
-      label: "My Submissions",
-      icon: "mdi-book-multiple",
-      isActive: () =>
-        this.$route.name === "dataset" || this.$route.name === "dataset-edit",
-    },
-    {
-      attrs: { to: "/contribute" },
-      label: "Contribute",
-      icon: "mdi-book-plus",
-      isActive: () => this.$route.name === "contribute",
-    },
-    {
-      attrs: { to: "/register" },
-      label: "Register",
-      icon: "mdi-link-plus",
-    },
-    // {
-    //   attrs: { href: "https://dsp.criticalzone.org/" },
-    //   label: "Contribute Data",
-    //   icon: "mdi-book-plus",
-    // },
   ];
 
   protected get isLoggedIn(): boolean {
