@@ -127,6 +127,7 @@ class ContentFile(BaseModel):
         media_object.encodingFormat = self.content_type
         media_object.contentSize = f"{self.size/1000.00} KB"
         media_object.name = self.file_name
+        media_object.sha256 = self.checksum
         return media_object
 
 

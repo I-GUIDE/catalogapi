@@ -160,6 +160,13 @@ class IsPartOf(CreativeWork):
     )
 
 
+class MediaObjectPartOf(CreativeWork):
+    url: Optional[HttpUrl] = Field(title="URL", description="The URL address to the related metadata document.")
+    description: Optional[str] = Field(
+        description="Information about a related metadata document."
+    )
+
+
 class SubjectOf(CreativeWork):
     url: Optional[HttpUrl] = Field(
         title="URL",
@@ -410,6 +417,11 @@ class MediaObject(SchemaBaseModel):
         title="Source organization",
         description="The organization that provided the media object."
     )
+    sha256: Optional[str] = Field(title="SHA-256", description="The SHA-256 hash of the media object.")
+    isPartOf: Optional[List[MediaObjectPartOf]] = Field(
+        title="Is part of",
+        description="Link to or citation for a related metadata document that this media object is a part of",
+    )
 
     @validator('contentSize')
     def validate_content_size(cls, v):
@@ -437,6 +449,15 @@ class MediaObject(SchemaBaseModel):
             raise ValueError('invalid unit')
 
         return v
+
+    # TODO: not validating the SHA-256 hash for now as the hydroshare content file hash is in md5 format
+    # @validator('sha256')
+    # def validate_sha256_string_format(cls, v):
+    #     if v:
+    #         v = v.strip()
+    #         if v and not re.match(r"^[a-fA-F0-9]{64}$", v):
+    #             raise ValueError('invalid SHA-256 format')
+    #     return v
 
 
 class CoreMetadata(SchemaBaseModel):

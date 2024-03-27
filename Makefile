@@ -18,10 +18,6 @@ down:
 build:
 	docker-compose build
 
-.PHONY: test
-test:
-	docker-compose exec api pytest tests
-
 .PHONY: format
 format:
 	docker-compose run api $(isort)

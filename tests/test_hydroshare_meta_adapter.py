@@ -86,15 +86,18 @@ async def test_hydroshare_resource_meta_adapter(hydroshare_resource_metadata, co
             assert media.contentUrl == f"{media_base_url}/model-program/V.dat"
             assert media.encodingFormat == "None"
             assert media.contentSize == "124.144 KB"
+            assert media.sha256 == "a0b00d911d09e69bdbee0033e40414f9"
         elif media.name == "Qsi.nc":
             assert media.contentUrl == f"{media_base_url}/model-program/Qsi.nc"
             assert media.encodingFormat == "application/x-netcdf"
             assert media.contentSize == "20.144 KB"
+            assert media.sha256 == "93b546c41fca467496900d0f2415c1de"
         else:
             assert media.name == "README.md"
             assert media.contentUrl == f"{media_base_url}/README.md"
             assert media.encodingFormat == "text/markdown"
             assert media.contentSize == "4.422 KB"
+            assert media.sha256 == "7d460cb12903a965d144cddcb2b62eac"
 
 
 @pytest.mark.asyncio

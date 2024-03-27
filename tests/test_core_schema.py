@@ -286,6 +286,7 @@ async def test_core_schema_associated_media_cardinality(core_data, core_model, m
                 "contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/USGS_Harvey_gages_TxLaMsAr.csv",
                 "encodingFormat": "text/csv",
                 "contentSize": "0.17 GB",
+                "sha256": "2fba6f2ebac562dac6a57acf0fdc5fdfabc9654b3c910aa6ef69cf4385997e19",
                 "name": "USGS gage locations within the Harvey-affected areas in Texas",
             },
             {
@@ -293,6 +294,7 @@ async def test_core_schema_associated_media_cardinality(core_data, core_model, m
                 "contentUrl": "https://www.hydroshare.org/resource/81cb3f6c0dde4433ae4f43a26a889864/data/contents/HydroClientMovie.mp4",
                 "encodingFormat": "video/mp4",
                 "contentSize": "79.2 MB",
+                "sha256": "2fba6f2ebac562dac6a57acf0fdc5fdfabc9654b3c910aa6ef69cf4385997e20",
                 "name": "HydroClient Video",
             },
         ]
@@ -306,6 +308,7 @@ async def test_core_schema_associated_media_cardinality(core_data, core_model, m
                 "contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/USGS_Harvey_gages_TxLaMsAr.csv",
                 "encodingFormat": "text/csv",
                 "contentSize": "0.17 MB",
+                "sha256": "2fba6f2ebac562dac6a57acf0fdc5fdfabc9654b3c910aa6ef69cf4385997e19",
                 "name": "USGS gage locations within the Harvey-affected areas in Texas",
             }
         ]
@@ -326,11 +329,17 @@ async def test_core_schema_associated_media_cardinality(core_data, core_model, m
         assert core_model_instance.associatedMedia[1].contentSize == associated_media[1]["contentSize"]
         assert core_model_instance.associatedMedia[0].encodingFormat == associated_media[0]["encodingFormat"]
         assert core_model_instance.associatedMedia[1].encodingFormat == associated_media[1]["encodingFormat"]
+        assert core_model_instance.associatedMedia[0].contentUrl == associated_media[0]["contentUrl"]
+        assert core_model_instance.associatedMedia[1].contentUrl == associated_media[1]["contentUrl"]
+        assert core_model_instance.associatedMedia[0].sha256 == associated_media[0]["sha256"]
+        assert core_model_instance.associatedMedia[1].sha256 == associated_media[1]["sha256"]
     elif multiple_media is not None:
         assert core_model_instance.associatedMedia[0].type == associated_media[0]["@type"]
         assert core_model_instance.associatedMedia[0].name == associated_media[0]["name"]
         assert core_model_instance.associatedMedia[0].contentSize == associated_media[0]["contentSize"]
         assert core_model_instance.associatedMedia[0].encodingFormat == associated_media[0]["encodingFormat"]
+        assert core_model_instance.associatedMedia[0].contentUrl == associated_media[0]["contentUrl"]
+        assert core_model_instance.associatedMedia[0].sha256 == associated_media[0]["sha256"]
 
 
 @pytest.mark.parametrize(
@@ -369,6 +378,7 @@ async def test_core_schema_associated_media_content_size(
             "contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/USGS_Harvey_gages_TxLaMsAr.csv",
             "encodingFormat": "text/csv",
             "contentSize": content_size_format,
+            "sha256": "2fba6f2ebac562dac6a57acf0fdc5fdfabc9654b3c910aa6ef69cf4385997e19",
             "name": "USGS gage locations within the Harvey-affected areas in Texas",
         }
     ]
@@ -397,6 +407,7 @@ async def test_core_schema_associated_media_encoding_format_optional(
             "@type": "MediaObject",
             "contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/USGS_Harvey_gages_TxLaMsAr.csv",
             "contentSize": "100.17 KB",
+            "sha256": "2fba6f2ebac562dac6a57acf0fdc5fdfabc9654b3c910aa6ef69cf4385997e19",
             "name": "USGS gage locations within the Harvey-affected areas in Texas",
         }
     ]
@@ -404,6 +415,53 @@ async def test_core_schema_associated_media_encoding_format_optional(
     # validate the data model
     core_model_instance = await utils.validate_data_model(core_data, core_model)
     assert core_model_instance.associatedMedia[0].encodingFormat is None
+
+
+@pytest.mark.parametrize("set_is_part_of", [True, False])
+@pytest.mark.asyncio
+async def test_core_schema_associated_media_is_part_of_optional(
+    core_data, core_model, set_is_part_of
+):
+    """Test that a core metadata pydantic model can be created from core metadata json.
+    Purpose of the test is to validate core metadata schema as defined by the pydantic model where we are testing
+    that isPartOf attribute of the associatedMedia property is optional.
+    Note: This test does nat add a record to the database.
+    """
+
+    core_data = core_data
+    core_model = core_model
+
+    core_data["associatedMedia"] = [
+        {
+            "@type": "MediaObject",
+            "contentUrl": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/logan.nc",
+            "contentSize": "100.17 KB",
+            "encodingFormat": "application/x-netcdf",
+            "sha256": "2fba6f2ebac562dac6a57acf0fdc5fdfabc9654b3c910aa6ef69cf4385997e19",
+            "name": "logan.nc",
+        }
+    ]
+
+    if set_is_part_of:
+        core_data["associatedMedia"][0]["isPartOf"] = [
+            {
+                "@type": "CreativeWork",
+                "name": "logan.nc.json",
+                "url": "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/logan.nc.json",
+            }
+        ]
+    # validate the data model
+    core_model_instance = await utils.validate_data_model(core_data, core_model)
+    if set_is_part_of:
+        assert len(core_model_instance.associatedMedia[0].isPartOf) == 1
+        assert core_model_instance.associatedMedia[0].isPartOf[0].type == "CreativeWork"
+        assert core_model_instance.associatedMedia[0].isPartOf[0].name == "logan.nc.json"
+        assert (
+            core_model_instance.associatedMedia[0].isPartOf[0].url
+            == "https://www.hydroshare.org/resource/51d1539bf6e94b15ac33f7631228118c/data/contents/logan.nc.json"
+        )
+    else:
+        assert core_model_instance.associatedMedia[0].isPartOf is None
 
 
 @pytest.mark.parametrize("set_additional_property", [True, False])
